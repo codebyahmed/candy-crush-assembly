@@ -1,0 +1,1024 @@
+; Made by: Hanan Noor Jahangiri & Ahmed Iqbal
+; 20i-0719 & 20i-0447
+; CS-G
+
+; --------------------
+spawnCandy MACRO Xc, Yc, radius, id
+    .IF (id == 0)
+        sub radius, 2
+        BOMBkiteCandy Xc, Yc, radius
+    .ELSEIF (id == 1)
+        sub radius, 2
+        starCandy Xc, Yc, radius
+    .ELSEIF (id == 2)
+        cloverCandy Xc, Yc, radius
+    .ELSEIF (id == 3)
+        labyrinthCandy Xc, Yc, radius
+    .ELSEIF (id == 4)
+        hexagonCandy Xc, Yc, radius
+    .ELSEIF (id == 5)
+        sub radius, 2
+        caneCandy Xc, Yc, radius
+    .ENDIF
+ENDM
+
+hexagonCandyRed macro Xc, Yc, radius ; x y coordinate, size
+mov bl, 1111b
+mov cx, Xc
+sub cx,radius; for making shape from x - size point
+mov dx, Yc
+shr radius, 1
+sub dx,radius ; for making shape from y - size/2 point
+shl radius, 1
+mov si,0; counter
+mov di,radius
+mov ax,radius
+.while(ax > 0)
+    .IF(AX == 2 || AX == 6)
+        mov bl, 1100b
+    .ELSE
+        mov bl, 0100b
+    .ENDIF
+    .while (si < ax)
+    mov count,ax
+    mov ah, 0ch
+    mov al, bl
+    int 10h
+    inc cx
+    dec dx
+    inc si
+    mov ax,count
+    .endw
+    add ax,di
+    inc dx
+    .while (si < ax)
+    mov count,ax
+    mov ah, 0ch
+    mov al, bl
+    int 10h
+    inc cx
+    inc dx
+    inc si
+    mov ax,count
+    .endw
+    add ax,di
+    .while (si < ax)
+    mov count,ax
+    mov ah, 0ch
+    mov al, bl
+    int 10h
+    inc dx
+    inc si
+    mov ax,count
+    .endw
+    add ax,di
+    dec cx
+    .while (si < ax)
+    mov count,ax
+    mov ah, 0ch
+    mov al, bl
+    int 10h
+    dec cx
+    inc dx
+    inc si
+    mov ax,count
+    .endw
+    add ax,di
+    dec dx
+    .while (si < ax)
+    mov count,ax
+    mov ah, 0ch
+    mov al, bl
+    int 10h
+    dec cx
+    dec dx
+    inc si
+    mov ax,count
+    .endw
+    add ax,di
+    .while (si < ax)
+    mov count,ax
+    mov ah, 0ch
+    mov al, bl
+    int 10h
+    dec dx
+    inc si
+    mov ax,count
+    .endw
+    sub ax,di; minus 5 times to get original value of size
+    sub ax,di
+    sub ax,di
+    sub ax,di
+    sub ax,di
+    sub di,2
+    mov si,0
+    sub ax,2
+    add cx,3
+    add dx,1
+.endw
+ENDM
+
+BOMBkiteCandy MACRO Xc, Yc, radius
+        inc Yc
+        ;RED
+        mov DI, Xc
+        add DI, radius
+        drawHorizontalLine Xc, DI, Yc, 1100b
+        mov DI, Yc
+        add DI, radius
+        drawVerticalLine Xc, Yc, DI, 1100b
+        mov DI, Yc
+        add DI, radius
+        mov SI, cx
+        add SI, radius
+        drawForwardSlahLine si, Yc, DI, 1100b
+
+        dec Yc
+        ;Yellow
+        mov DI, Xc
+        add DI, radius
+        inc DI
+        drawHorizontalLine Xc, DI, Yc, 1110b
+        mov DI, Yc
+        sub DI, radius
+        drawVerticalLine Xc, Di, Yc, 1110b
+        mov SI, Yc
+        sub Si, radius
+        dec SI
+        drawBackSlahLine Xc, Si, Yc, 1110b
+
+        inc Yc
+        dec Xc
+        ;Green
+        mov DI, Xc
+        SUB DI, radius
+        drawHorizontalLine DI, Xc, Yc, 1010b
+        mov DI, Yc
+        add DI, radius
+        drawVerticalLine Xc, Yc, DI, 1010b
+        mov SI, Yc
+        add Si, radius
+        mov DI, Xc
+        sub DI, radius
+        drawBackSlahLine Di, Yc, SI, 1010b
+
+        dec Yc
+        ;Blue
+        mov DI, Xc
+        sub DI, radius
+        drawHorizontalLine Di, Xc, Yc, 1011b
+        mov DI, Yc
+        sub DI, radius
+        dec DI
+        drawVerticalLine Xc, DI, Yc, 1011b
+        mov DI, Yc
+        sub DI, radius
+        dec DI
+        drawForwardSlahLine Xc, DI, Yc, 1011b
+ENDM
+
+drawHorizontalLine MACRO Xstart, Xstop, Yc, colour
+    mov cx, Xstart
+    mov dx, Yc
+    .WHILE(CX <= Xstop)
+        mov ah, 0Ch
+        mov al, colour
+        int 10h
+        inc cx
+    .ENDW
+ENDM
+
+; |
+drawVerticalLine MACRO Xc, Ystart, Ystop, colour
+    mov cx, Xc
+    mov dx, Ystart
+    .WHILE(dx <= Ystop)
+        mov ah, 0Ch
+        mov al, colour
+        int 10h
+        inc dx
+    .ENDW
+ENDM
+
+; /
+drawForwardSlahLine MACRO Xc, Ystart, Ystop, colour
+    mov cx, Xc
+    mov dx, Ystart
+    .WHILE(dx <= Ystop)
+        mov ah, 0Ch
+        mov al, colour
+        int 10h
+        inc dx
+        dec cx
+    .ENDW
+ENDM
+
+; \
+drawBackSlahLine MACRO Xc, Ystart, Ystop, colour
+    mov cx, Xc
+    mov dx, Ystart
+    .WHILE(dx <= Ystop)
+        mov ah, 0Ch
+        mov al, colour
+        int 10h
+        inc dx
+        inc cx
+    .ENDW
+ENDM
+; []
+drawSquare MACRO Xc, Yc, radius, colour
+    mov bp, Xc
+    mov bx, Xc
+    mov si, Yc
+    mov di, Yc
+    sub bp, radius
+    add bx, radius
+    sub si, radius
+    add di, radius
+    pusha
+    drawHorizontalLine bp, bx, si, colour
+    pusha
+    popa
+    drawHorizontalLine bp, bx, di, colour
+    pusha
+    popa
+    drawVerticalLine bp, si, di, colour
+    popa
+    drawVerticalLine bx, si, di, colour
+ENDM
+
+hexagonCandy macro Xc, Yc, radius ; x y coordinate, size
+mov bl, 1111b
+mov cx, Xc
+sub cx,radius; for making shape from x - size point
+mov dx, Yc
+shr radius, 1
+sub dx,radius ; for making shape from y - size/2 point
+shl radius, 1
+mov si,0; counter
+mov di,radius
+mov ax,radius
+.while(ax > 0)
+    .IF(AX == 2 || AX == 6)
+        mov bl, 1011b
+    .ELSE
+        mov bl, 1110b
+    .ENDIF
+    .while (si < ax)
+    mov count,ax
+    mov ah, 0ch
+    mov al, bl
+    int 10h
+    inc cx
+    dec dx
+    inc si
+    mov ax,count
+    .endw
+    add ax,di
+    inc dx
+    .while (si < ax)
+    mov count,ax
+    mov ah, 0ch
+    mov al, bl
+    int 10h
+    inc cx
+    inc dx
+    inc si
+    mov ax,count
+    .endw
+    add ax,di
+    .while (si < ax)
+    mov count,ax
+    mov ah, 0ch
+    mov al, bl
+    int 10h
+    inc dx
+    inc si
+    mov ax,count
+    .endw
+    add ax,di
+    dec cx
+    .while (si < ax)
+    mov count,ax
+    mov ah, 0ch
+    mov al, bl
+    int 10h
+    dec cx
+    inc dx
+    inc si
+    mov ax,count
+    .endw
+    add ax,di
+    dec dx
+    .while (si < ax)
+    mov count,ax
+    mov ah, 0ch
+    mov al, bl
+    int 10h
+    dec cx
+    dec dx
+    inc si
+    mov ax,count
+    .endw
+    add ax,di
+    .while (si < ax)
+    mov count,ax
+    mov ah, 0ch
+    mov al, bl
+    int 10h
+    dec dx
+    inc si
+    mov ax,count
+    .endw
+    sub ax,di; minus 5 times to get original value of size
+    sub ax,di
+    sub ax,di
+    sub ax,di
+    sub ax,di
+    sub di,2
+    mov si,0
+    sub ax,2
+    add cx,3
+    add dx,1
+.endw
+ENDM
+
+starCandy MACRO Xc, Yc, radius
+    ;drawing inner box and box string
+    mov di, Yc
+    mov bx, di
+    sub di, radius
+    shr radius, 1
+    mov si, Xc
+    add si, radius
+    sub di, radius
+    drawForwardSlahLine si, di, bx, 02h
+
+    sub si, radius
+    sub si, radius
+    drawBackSlahLine si, di, bx, 02h
+
+    shl radius, 1
+    add bx, radius
+    add di, radius
+    drawBackSlahLine si, di, bx, 02h
+
+    add si, radius
+    drawForwardSlahLine si, di, bx, 02h
+
+    sub di, radius
+    sub bx, radius
+    sub bx, radius
+    drawForwardSlahLine si, di, bx, 1100b
+
+    sub si, radius
+    drawBackSlahLine si, di, bx, 1100b
+
+    ;drawing box border
+    drawSquare Xc, Yc, radius, 1100b
+
+ENDM
+
+cloverCandy MACRO Xc, Yc, radius
+    shr radius, 1
+    ;drawing all horizontal lines
+    mov si, Xc
+    sub si, radius
+    mov bx, si
+    add bx, radius
+    add bx, radius
+    mov di, Yc
+    add di, radius
+    add di, radius
+    drawHorizontalLine si, bx, di, 1001b
+    mov bx, si
+    sub si, radius
+    sub di, radius
+    drawHorizontalLine si, bx, di, 1001b
+    sub di, radius
+    sub di, radius
+    drawHorizontalLine si, bx, di, 1001b
+    sub di, radius
+    mov si, bx
+    add bx, radius
+    add bx, radius
+    drawHorizontalLine si, bx, di, 1001b
+    add di, radius
+    mov si, bx
+    add bx, radius
+    drawHorizontalLine si, bx, di, 1001b
+    add di, radius
+    add di, radius
+    drawHorizontalLine si, bx, di, 1001b
+
+    ;drawing all vertical lines
+    mov bx, di
+    add bx, radius
+    drawVerticalLine si, di, bx, 1001b
+    mov bx, di
+    sub di, radius
+    sub di, radius
+    add si, radius
+    drawVerticalLine si, di, bx, 1001b
+    mov bx, di
+    sub di, radius
+    sub si, radius
+    drawVerticalLine si, di, bx, 1001b
+    sub si, radius
+    sub si, radius
+    drawVerticalLine si, di, bx, 1001b
+    sub si, radius
+    mov di, bx
+    add bx, radius
+    add bx, radius
+    drawVerticalLine si, di, bx, 1001b
+    mov di, bx
+    add bx, radius
+    add si, radius
+    drawVerticalLine si, di, bx, 1001b
+
+    ; drawing square in middle
+    shr radius, 1
+    drawSquare Xc, Yc, radius, 1011b
+ENDM
+
+labyrinthCandy MACRO Xc, Yc, radius
+    .WHILE(radius > 2)
+        drawSquare Xc, Yc, radius, 1010b
+        sub radius, 2
+        drawSquare Xc, Yc, radius, 1110b
+        sub radius, 2
+    .ENDW
+    drawSquare Xc, Yc, 2, 1110b
+    drawSquare Xc, Yc, 1, 1010b
+
+ENDM
+
+caneCandy MACRO Xc, Yc, radius
+    add Xc, 3
+    mov si, Yc
+    mov di, Yc
+    mov bx, Xc
+    mov bp, Xc
+    sub bx, radius
+    add bp, radius
+    sub si, 4
+    add di, 4
+    .WHILE(bp > bx)
+        drawForwardSlahLine bp, si, di, 1101b
+        sub bp, 2
+        drawForwardSlahLine bp, si, di, 1110b
+        sub bp, 2
+    .ENDW 
+ENDM
+
+selectSquareOnGrid MACRO Xc, Yc
+    mov radius, 13
+    mov color, 1001b
+    drawSquare Xc, Yc, radius, color
+    dec radius
+    mov color, 1011b
+    drawSquare Xc, Yc, radius, color
+    dec radius
+    mov color, 1110b
+    drawSquare Xc, Yc, radius, color
+    dec radius
+    mov color, 1100b
+    drawSquare Xc, Yc, radius, color
+ENDM
+
+addDelay MACRO num
+    local Loop1, Loop2
+    mov cx, num
+	Loop1:
+		mov dx, num
+		Loop2:
+			dec dx
+			cmp dx,0
+		jne Loop2
+	Loop Loop1
+ENDM
+
+breakBoxOnGrid MACRO index
+    mov DI, index
+    mov AX, boardCandies.xcoor[DI]
+    mov Xc, AX
+    mov BX, boardCandies.ycoor[DI]
+    mov Yc, BX
+    mov radius, 12
+    mov color, 0
+    .WHILE(radius > 0)
+        drawSquare Xc, Yc, radius, color
+        addDelay 100
+        sub radius, 1
+    .ENDW
+ENDM
+
+swapcandies MACRO s1, s2
+    mov SI, s1
+    mov DI, s2
+    mov AX, boardCandies.candyid[SI]
+    mov BX, boardCandies.candyid[DI]
+    .IF(AX != -2 && BX != -2)
+        mov boardCandies.candyid[SI], BX
+        mov boardCandies.candyid[DI], AX
+    .ENDIF
+ENDM
+
+spawnNewCandies MACRO
+    local spawnedsuccessfully
+    mov spawned, 1
+    .while(spawned == 1)
+        mov count1, 0
+        .WHILE(count1 <= 96)
+            mov SI, count1
+            .IF(boardCandies.candyid[SI] == -1)
+                call randomIdwithBomb
+                mov AX, id
+                mov SI, count1
+                mov boardCandies.candyid[SI], AX
+                addDelay 150
+                call showCurrentCandies
+                mov spawned, 1
+                jmp spawnedsuccessfully
+            .ENDIF
+            inc count1
+        .ENDW
+    mov spawned, 0
+    spawnedsuccessfully:
+    .ENDW
+ENDM
+
+showMouse MACRO
+    mov AX, 01
+    int 33h
+    ;restrict y-axis
+    mov AX, 8h
+    mov cx, 10
+    mov dx, 192
+    int 33h
+    ;restrict x-axis
+    mov AX, 7h
+    mov cx, 38
+    mov dx, 402
+    int 33h
+ENDM
+
+levelpassedScreen MACRO
+    addDelay 900
+    mov ah, 00h
+	mov al, 13
+	int 10h
+    call drawBorders
+    addDelay 900
+;displaying "lvl passed" text
+    mov ah, 02h
+    mov dh, 12
+    mov dl, 14
+    int 10h
+    mov ah,09h
+    mov dx,offset lvlpassedprompt
+    int 21h 
+    addDelay 1300
+    mov xB, 8
+    mov yB, 22
+    printText r9String, xB, yB
+ENDM
+
+levelfailedScreen MACRO
+    local checkInput
+    addDelay 900
+    mov ah, 00h
+	mov al, 13
+	int 10h
+    call drawBorders
+    addDelay 900
+;displaying "lvl passed" text
+    mov ah, 02h
+    mov dh, 12
+    mov dl, 14
+    int 10h
+    mov ah,09h
+    mov dx,offset lvlfailedprompt
+    int 21h 
+    addDelay 1300
+    mov xB, 4
+    mov yB, 20
+    printText escOrSpaceChoice, xB, yB
+
+    checkInput:
+        mov ah, 07
+        int 21h
+        .IF(al != 32 && al != 27)
+            jne checkInput
+        .ENDIF
+    .IF(al == 32)
+        mov tryagainchoice, 1
+    .ELSEIF(al == 27)
+        mov tryagainchoice, 0
+    .ENDIF
+ENDM
+
+finnishScreen MACRO
+    mov ah, 00h
+	mov al, 13
+	int 10h
+    call drawBorders
+    candyTowers
+;displaying "fin" text
+    mov ah, 02h
+    mov dh, 10
+    mov dl, 18
+    int 10h
+    mov ah,09h
+    mov dx,offset finprompt
+    int 21h
+    addDelay 800
+    ;displaying scoreprompt for each level
+    mov xB, 16
+    mov yB, 16
+    printText scorelvl1Prompt, xB, yB
+    mov ah, 02h
+    mov dh, 16
+    mov dl, 23
+    int 10h
+    mov AX, scorelvl1
+    call output1
+    addDelay 800
+    mov xB, 16
+    mov yB, 18
+    printText scorelvl2Prompt, xB, yB
+    mov ah, 02h
+    mov dh, 18
+    mov dl, 23
+    int 10h
+    mov AX, scorelvl2
+    call output1
+    addDelay 800
+    mov xB, 16
+    mov yB, 20
+    printText scorelvl3Prompt, xB, yB
+    mov ah, 02h
+    mov dh, 20
+    mov dl, 23
+    int 10h
+    mov AX, scorelvl3
+    call output1
+    ;displaying "score: " text
+    addDelay 800
+    mov xB, 16
+    mov yB, 22
+    printText scorePrompt, xB, yB
+    mov ah, 02h
+    mov dh, 22
+    mov dl, 23
+    int 10h
+    mov AX, totalscore
+    call output1
+    addDelay 800
+ENDM
+
+printText macro text, Xb, Yb
+    mov ah, 02
+    mov dh, Yb
+    mov dl, Xb
+    int 10h
+    mov ah,09h
+    mov dx, offset text
+    int 21h
+endm
+
+candyTowers macro 
+    ;Left display
+    mov count1, 30
+    .while(count1 < 170)
+        mov Xc, 40
+        mov di, count1
+        mov Yc, di
+        mov radius, 6
+        hexagonCandy Xc, Yc, radius
+        add count1,45
+    .endw
+    mov count1, 52
+    .while(count1 < 170)
+        mov Xc, 40
+        mov di, count1
+        mov Yc, di
+        mov radius, 6
+        BOMBkiteCandy Xc, Yc, radius
+        add count1,45
+    .endw
+    ;Right display
+    mov count1, 30
+    .while(count1 < 170)
+        mov Xc, 280
+        mov di, count1
+        mov Yc, di
+        mov radius, 6
+        hexagonCandy Xc, Yc, radius
+        add count1,45
+    .endw
+    mov count1, 52
+    .while(count1 < 170)
+        mov Xc, 280
+        mov di, count1
+        mov Yc, di
+        mov radius, 6
+        BOMBkiteCandy Xc, Yc, radius
+        add count1,45
+    .endw
+ENDM
+
+;breaks pairs of candies in a ROW
+;number of candies to be broken is given by combonum
+horizontalpairbreak MACRO index, combonum
+    mov DI, index
+    mov DX, 0
+    .WHILE(dx<combonum)
+        mov boardCandies.candyid[DI], -1
+        pusha
+        mov index, DI
+        breakBoxOnGrid index
+        popa
+        add DI, 2
+        inc dx
+    .ENDW
+ENDM
+
+;breaks pairs of candies in a COLUMN
+;number of candies to be broken is given by combonum
+verticalpairbreak MACRO index, combonum
+    mov DI, index
+    mov DX, 0
+    .WHILE(dx<combonum)
+        mov boardCandies.candyid[DI], -1
+        pusha
+        mov index, DI
+        breakBoxOnGrid index
+        popa
+        add DI, 14
+        inc dx
+    .ENDW
+ENDM
+
+breakCandies MACRO boardCandies
+    local gotocandiesbroken
+            mov newPoints, 0
+
+    ;**THIS FIRST WHILE LOOP CHECKS CANDIES IN ROWS**
+
+    mov count1, 0
+    mov counter, 0
+    .WHILE(counter < 7)
+        ;SINGLE IF TO CHECK IF THE ENTIRE ROW IS MADE OF SAME CANDY
+        mov SI, count1
+        mov AX, boardCandies.candyid[SI+0]
+        .IF( AX != 0 && AX == boardCandies.candyid[SI+2] && AX == boardCandies.candyid[SI+4] && AX == boardCandies.candyid[SI+6] && AX == boardCandies.candyid[SI+8] && AX == boardCandies.candyid[SI+10] && AX == boardCandies.candyid[SI+12] && AX != -1 && AX != -2)
+            call displayCRUSHINGprompt
+            mov index, SI
+            mov BX, 7
+            horizontalpairbreak index, BX
+            mov broken, 1
+            add newPoints, 7
+            jmp gotocandiesbroken
+        .ENDIF
+
+        ;TWO IFS FOR GROUPS OF 6
+        mov SI, count1
+        mov count3, 0
+        .while(count3 < 2)
+            mov AX, boardCandies.candyid[SI+0]
+            .IF(AX != 0 && AX == boardCandies.candyid[SI+2] && AX == boardCandies.candyid[SI+4] && AX == boardCandies.candyid[SI+6] && AX == boardCandies.candyid[SI+8] && AX == boardCandies.candyid[SI+10] && AX != -1 && AX != -2)
+                call displayCRUSHINGprompt
+                mov index, SI
+                mov BX, 6
+                horizontalpairbreak index, BX
+                mov broken, 1
+                add newPoints, 6
+                jmp gotocandiesbroken
+            .ENDIF
+            add SI, 2
+            inc count3
+        .ENDW  
+
+        ;THREE IFS FOR GROUPS OF 5
+        mov SI, count1
+        mov count3, 0
+        .while(count3 < 3)
+            mov AX, boardCandies.candyid[SI+0]
+            .IF(AX != 0 && AX == boardCandies.candyid[SI+2] && AX == boardCandies.candyid[SI+4] && AX == boardCandies.candyid[SI+6] && AX == boardCandies.candyid[SI+8] && AX != -1 && AX != -2)
+                call displayCRUSHINGprompt
+                mov index, SI
+                mov BX, 5
+                horizontalpairbreak index, BX
+                mov broken, 1
+                add newPoints, 5
+                jmp gotocandiesbroken
+            .ENDIF
+            add SI, 2
+            inc count3
+        .ENDW   
+
+        ;FOUR IFS FOR GROUPS OF 4
+        mov SI, count1
+        mov count3, 0
+        .while(count3 < 4)
+            mov AX, boardCandies.candyid[SI+0]
+            .IF(AX != 0 && AX == boardCandies.candyid[SI+2] && AX == boardCandies.candyid[SI+4] && AX == boardCandies.candyid[SI+6] && AX != -1 && AX != -2)
+                call displayCRUSHINGprompt
+                mov index, SI
+                mov BX, 4
+                horizontalpairbreak index, BX
+                mov broken, 1
+                add newPoints, 4
+                jmp gotocandiesbroken
+            .ENDIF
+            add SI, 2
+            inc count3
+        .ENDW   
+
+        ;FIVE IFS FOR GROUPS OF 3
+        mov SI, count1
+        mov count3, 0
+        .while(count3 < 5)
+            mov AX, boardCandies.candyid[SI+0]
+            .IF(AX != 0 && AX == boardCandies.candyid[SI+2] && AX == boardCandies.candyid[SI+4] && AX != -1 && AX != -2)
+                call displayCRUSHINGprompt
+                mov index, SI
+                mov BX, 3
+                horizontalpairbreak index, BX
+                mov broken, 1
+                add newPoints, 3
+                jmp gotocandiesbroken
+            .ENDIF
+            add SI, 2
+            inc count3
+        .ENDW   
+
+        ADD counter, 1
+        add count1, 14
+    .ENDW
+
+    ;**THIS SECOND WHILE LOOP CHECKS CANDIES IN COLUMNS**
+    
+    mov count1, 0
+    mov counter, 0
+    .WHILE(counter < 7)
+        ;SINGLE IF TO CHECK IF THE ENTIRE COLUMN IS MADE OF SAME CANDY
+        mov SI, count1
+        mov AX, boardCandies.candyid[SI+0]
+        .IF(AX != 0 && AX == boardCandies.candyid[SI+14] && AX == boardCandies.candyid[SI+28] && AX == boardCandies.candyid[SI+42] && AX == boardCandies.candyid[SI+56] && AX == boardCandies.candyid[SI+70] && AX == boardCandies.candyid[SI+84] && AX != -1 && AX != -2)
+            call displayCRUSHINGprompt
+            mov index, SI
+            mov BX, 7
+            verticalpairbreak index, BX
+            mov broken, 1
+            add newPoints, 7
+            jmp gotocandiesbroken
+        .ENDIF
+
+        ;TWO IFS FOR GROUPS OF 6
+        mov SI, count1
+        mov count3, 0
+        .while(count3 < 2)
+            mov AX, boardCandies.candyid[SI+0]
+            .IF(AX != 0 && AX == boardCandies.candyid[SI+14] && AX == boardCandies.candyid[SI+28] && AX == boardCandies.candyid[SI+42] && AX == boardCandies.candyid[SI+56] && AX == boardCandies.candyid[SI+70] && AX != -1 && AX != -2)
+                call displayCRUSHINGprompt
+                mov index, SI
+                mov BX, 6
+                verticalpairbreak index, BX
+                mov broken, 1
+                add newPoints, 6
+                jmp gotocandiesbroken
+            .ENDIF
+            add SI, 14
+            inc count3
+        .ENDW  
+
+        ;THREE IFS FOR GROUPS OF 5
+        mov SI, count1
+        mov count3, 0
+        .while(count3 < 3)
+            mov AX, boardCandies.candyid[SI+0]
+            .IF(AX != 0 && AX == boardCandies.candyid[SI+14] && AX == boardCandies.candyid[SI+28] && AX == boardCandies.candyid[SI+42] && AX == boardCandies.candyid[SI+56] && AX != -1 && AX != -2)
+                call displayCRUSHINGprompt
+                mov index, SI
+                mov BX, 5
+                verticalpairbreak index, BX
+                mov broken, 1
+                add newPoints, 5
+                jmp gotocandiesbroken
+            .ENDIF
+            add SI, 14
+            inc count3
+        .ENDW   
+
+        ;FOUR IFS FOR GROUPS OF 4
+        mov SI, count1
+        mov count3, 0
+        .while(count3 < 4)
+            mov AX, boardCandies.candyid[SI+0]
+            .IF(AX != 0 && AX == boardCandies.candyid[SI+14] && AX == boardCandies.candyid[SI+28] && AX == boardCandies.candyid[SI+42] && AX != -1 && AX != -2)
+                call displayCRUSHINGprompt
+                mov index, SI
+                mov BX, 4
+                verticalpairbreak index, BX
+                mov broken, 1
+                add newPoints, 4
+                jmp gotocandiesbroken
+            .ENDIF
+            add SI, 14
+            inc count3
+        .ENDW
+
+        ;FIVE IFS FOR GROUPS OF 3
+        mov SI, count1
+        mov count3, 0
+        .while(count3 < 5)
+            mov AX, boardCandies.candyid[SI+0]
+            .IF(AX != 0 && AX == boardCandies.candyid[SI+14] && AX == boardCandies.candyid[SI+28] && AX != -1 && AX != -2)
+                call displayCRUSHINGprompt
+                mov index, SI
+                mov BX, 3
+                verticalpairbreak index, BX
+                mov broken, 1
+                add newPoints, 3
+                jmp gotocandiesbroken
+            .ENDIF
+            add SI, 14
+            inc count3
+        .ENDW   
+
+        ADD counter, 1
+        add count1, 2
+    .ENDW
+
+    mov broken, 0
+    gotocandiesbroken:
+ENDM
+
+performBombExplosion MACRO
+    call displayEXPLOSIONprompt
+    mov newPoints, 0
+    mov count3, 0
+    .WHILE(count3 <= 96)
+        mov SI, count3
+        mov AX, boardCandies.candyid[SI]
+        mov BX, candyswappedwithbomb
+        mov CX, boardCandies.candyid[BX]
+        .IF(AX == CX && candyswappedwithbomb != SI)
+            mov CX, boardCandies.xcoor[SI]
+            mov DX, boardCandies.ycoor[SI]
+            mov Xc, CX
+            mov Yc, DX
+            popa
+            selectSquareOnGrid Xc, Yc
+            addDelay 300
+            pusha
+        .ENDIF
+        add count3, 2
+    .ENDW
+    mov count3, 0
+    .WHILE(count3 <= 96)
+        mov SI, count3
+        mov AX, boardCandies.candyid[SI]
+        mov BX, candyswappedwithbomb
+        mov CX, boardCandies.candyid[BX]
+        .IF(AX == CX && candyswappedwithbomb != SI)
+            mov SI, count3
+            mov boardCandies.candyid[SI], -1
+            mov index, SI
+            pusha
+            breakBoxOnGrid index
+            popa
+            inc newPoints
+        .ENDIF
+        add count3, 2
+    .ENDW
+    mov SI, selected1
+    mov index, SI
+    mov boardCandies.candyid[SI], -1
+    pusha
+    breakBoxOnGrid index
+    popa
+    mov DI, selected2
+    mov index, DI
+    mov boardCandies.candyid[DI], -1
+    pusha
+    breakBoxOnGrid index
+    popa
+    add newPoints, 2
+ENDM
+
+displayBoomScreen MACRO
+    mov ah, 00h
+    mov al, 13
+    int 10h
+    mov bl, 1100b
+    mov ah, 0Bh
+    mov bh, 00
+    int 10h
+    addDelay 300
+ENDM
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
