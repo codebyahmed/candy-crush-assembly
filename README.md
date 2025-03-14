@@ -1,8 +1,18 @@
 # Candy Crush Assembly
 
-A classic match-3 game implemented in Assembly language (MASM). This game features multiple levels, different candy types, combo mechanics, and high score tracking.
-
 ![Game Screenshot](game-screenshot.png)
+
+## Description
+
+Candy Crush Assembly is a complete match-3 puzzle game written in x86 Assembly. The game includes:
+- 3 increasingly difficult levels
+- Multiple candy types with unique visuals
+- Special bomb candies with explosion effects
+- Score tracking and high score system
+
+## Demo Video
+Check out the gameplay video on YouTube:
+[Candy Crush Assembly Demo](https://youtu.be/lxzfWXKaycY)
 
 ## Installation and Setup
 
@@ -35,7 +45,7 @@ A classic match-3 game implemented in Assembly language (MASM). This game featur
    ```
 
 5. **Run the game**:
-   ```sh
+   ```
    candy.exe
    ```
 
