@@ -14,7 +14,7 @@ Candy Crush Assembly is a complete match-3 puzzle game written in x86 Assembly. 
 Check out the gameplay video on YouTube:
 [Candy Crush Assembly Demo](https://youtu.be/lxzfWXKaycY)
 
-## Installation and Setup)
+## Installation and Setup
 
 ### Setup Instructions
 
